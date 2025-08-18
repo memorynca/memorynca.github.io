@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Memory NCA</title>
+    <!--    Add css style from external file -->
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+<body>
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="playIcon" viewBox="0 0 24 24">
+        <path d="M8 5v14l11-7z"></path>
+        <path d="M0 0h24v24H0z" fill="none"></path>
+    </symbol>
+    <symbol id="pauseIcon" viewBox="0 0 24 24">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
+        <path d="M0 0h24v24H0z" fill="none"></path>
+    </symbol>
+    <symbol id="resetIcon" viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"></path>
+    </symbol>
+    <symbol id="zoomInIcon" viewBox="0 0 24 24">
+        <path d="M0 0h24v24H0V0z" fill="none"/>
+        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+        <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
+    </symbol>
+
+    <div class="container">
+        <div class="header">
+            <h1>Uncovering the Landscape of Non-Equilibrium Memories with Neural Cellular Automata</h1>
+            <p></p>
+        </div>
+
+        <div class="demo-section">
+            <div class="main-content">
+
+                <div class="canvas-section">
+                    <div class="demo-tip">
+                        <img id="pointer" src="images/pointer.svg" width="40px" height="40px"/>
+                        <div class="hint ">
+                            Click or tap to change the state of the CA with the brush.
+                        </div>
+                    </div>
+                    <div class="canvas-container">
+                        <canvas id="c" width="600" height="600"></canvas>
+                    </div>
+
+                    <div class="canvas-controls">
+                        <div style="text-align: left;">
+                        <span id="play-pause">
+                          <svg class="icon" id="play" style="display: none;"><use xlink:href="#playIcon"></use></svg>
+                          <svg class="icon" id="pause"><use xlink:href="#pauseIcon"></use></svg>
+                        </span>
+                            <svg class="icon" id="reset_state">
+                                <use xlink:href="#resetIcon"></use>
+                            </svg>
+                            <svg class="icon" id="reset_CA" style="fill: white; background: indianred;">
+                                <use xlink:href="#resetIcon"></use>
+                            </svg>
+                        </div>
+
+                        <div>
+                            <div class="slider-container" style="">
+                                <input type="range" id="spf" class="slider" min="-4" max="4" value="-1">
+                                <label>Steps/Frame: </label> <label class="slider-value" id="spf-value">1/3x</label>
+                            </div>
+                        </div>
+
+                        <div id='brush-bit-select' class="button-group">
+                            <label>
+                                <input type="radio" name="brush-bit"><img src="images/0.png" width="34px"
+                                                                          height="34px"/>
+                            </label>
+                            <label>
+                                <input type="radio" name="brush-bit" checked="checked"><img src="images/1.png"
+                                                                                            width="34px"
+                                                                                            height="34px"/>
+                            </label>
+                            <label>
+                                <input type="radio" name="brush-bit"><img src="images/noise.png"
+                                                                          width="34px" height="34px"/>
+                            </label>
+                            <br> Brush Bit
+                        </div>
+
+                        <div>
+                            <div class="slider-container">
+                                <input type="range" id="noise-prob" class="slider" min="0" max="1" step="0.001"
+                                       value="0.1" style="margin-top:30px;">
+                                <label>Noise Probability: </label> <label class="slider-value"
+                                                                          id="noise-prob-value">0.1</label>
+                            </div>
+                        </div>
+
+
+                        <div id='brush-size-select' class="button-group">
+                            <label>
+                                <input type="radio" name="brush-size"><img
+                                    src="images/brush_S.png" width="34px" height="34px"/>
+                            </label>
+                            <label>
+                                <input type="radio" name="brush-size" checked="checked"><img src="images/brush_M.png"
+                                                                                             width="34px"
+                                                                                             height="34px"/>
+                            </label>
+                            <label>
+                                <input type="radio" name="brush-size"><img
+                                    src="images/brush_L.png" width="34px" height="34px"/>
+                            </label>
+                            <br> Brush Size
+                        </div>
+
+                        <div>
+                            <div class="slider-container">
+                                <input type="range" id="noise-bias" class="slider" min="-1" max="1" step="0.001"
+                                       value="0.0" style="margin-top:20px;">
+                                <label>Noise Bias: </label> <label class="slider-value"
+                                                                   id="noise-bias-value">0.0</label>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="rule-visualizer">
+                        <canvas id="imageCanvas" width="605" height="301"></canvas>
+                        <canvas id="overlayCanvas" width="605" height="301"></canvas>
+                    </div>
+                    <div class="demo-tip">
+                        <img id="pointer" src="images/pointer.svg" width="40px" height="40px"/>
+                        <div class="hint ">
+                            Double click on the rule above to edit it. To revert, press the red reset button.
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="controls-section">
+                    <div class="control-group">
+                        <h3>Simulation Parameters</h3>
+
+                        <div class="control-item">
+                            <label>CA Rule</label>
+                            <select id="rule-select" class="custom-select">
+                            </select>
+                        </div>
+
+                        <div class="control-item">
+                            <label>Grid Size</label>
+                            <div class="slider-container">
+                                <input type="range" id="grid-size" class="slider" min="16" max="400" value="100">
+                                <div class="slider-value" id="grid-size-value">100</div>
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <label>Update Probability</label>
+                            <div class="slider-container">
+                                <input type="range" id="update-prob" class="slider" min="0.001" max="1" step="0.001"
+                                       value="1">
+                                <div class="slider-value" id="update-prob-value">1</div>
+                            </div>
+                        </div>
+
+
+                        <div class="control-group">
+                            <h3>Initial Condition</h3>
+
+                            <div id='init-bit-select' class="button-group"
+                                 style="background: transparent; text-align: center">
+                                <label>
+                                    <input type="radio" name="init-bit" checked="checked"><img
+                                        src="images/0.png" width="90px" height="90px"/>
+                                </label>
+                                <label>
+                                    <input type="radio" name="init-bit"><img src="images/1.png" width="90px"
+                                                                             height="90px"/>
+                                </label>
+                                <label>
+                                    <input type="radio" name="init-bit"><img
+                                        src="images/noise_hr.png" width="90px" height="90px"/>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>Current Rule</h3>
+                            <div class="current-rule-display" id="current_rule">
+                                Loading rule...
+                            </div>
+                        </div>
+
+                        <div class="control-group">
+                            <h3>Add a New Rule</h3>
+                            <div class="rule-input-section">
+                                <h4>Custom Rule</h4>
+                                <div class="input-group">
+                                    <input type="text" id="rule_name" class="input-field" placeholder="Rule Name">
+                                </div>
+                                <div class="input-group">
+                                    <input type="text" id="rule_code" class="input-field code-input"
+                                           placeholder="512-bit Binary Code">
+                                </div>
+                                <button id="add_rule" class="btn btn-primary" style="width: 100%;">Add Rule</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article Section -->
+            <div class="article-section" id="article-content">
+
+            </div>
+
+
+        </div>
+        <script src="swissgl.js"></script>
+        <script src="ca.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+        <script>
+            const blogMarkdown = `
+# Understanding Memory Cellular Automata
+
+Cellular automata (CA) represent one of the most fascinating examples of how simple rules can give rise to complex emergent behavior. Unlike traditional cellular automata that consider only the immediate neighborhood of a cell, *memory cellular automata* incorporate information from extended neighborhoods, creating richer dynamics and more sophisticated computational capabilities.
+
+## The Mathematics Behind Memory CA
+
+In a standard cellular automaton, the state of a cell at time *t+1* depends only on its neighborhood configuration at time *t*. Memory CA extend this by considering a larger context window, effectively giving cells a form of "memory" about their extended environment.
+
+For a 2D grid, if we consider a 3×3 neighborhood around each cell, we have 2^9 = 512 possible configurations. Each configuration maps to a binary output (0 or 1), resulting in a 512-bit rule string that completely defines the automaton's behavior.
+
+### Rule Visualization
+
+The interactive visualization above shows both the current state of the cellular automaton and the underlying rule structure. The rule visualizer displays all 512 possible neighborhood configurations, with green indicating "alive" (1) outputs and red indicating "dead" (0) outputs for each configuration.
+
+> Try double-clicking on individual cells in the rule visualizer to manually edit the rule and observe how small changes can dramatically alter the emergent patterns.
+
+## Emergent Computation
+
+What makes memory CA particularly interesting is their capacity for computation. The extended neighborhood allows for more sophisticated information processing, enabling phenomena such as:
+
+- **Pattern propagation** - Complex structures can move across the grid while maintaining their form
+- **Information storage** - Local configurations can encode and preserve information over time
+- **Collision dynamics** - Interacting patterns can perform logical operations
+- **Self-organization** - Random initial conditions often evolve into organized, repeating structures
+
+## Noise and Stochastic Dynamics
+
+Real-world systems are rarely deterministic. This simulation incorporates several forms of stochasticity:
+
+**Noise Probability** controls how often random fluctuations occur, while **Noise Bias** determines whether these fluctuations favor alive or dead states. **Update Probability** introduces temporal irregularity, causing some cells to skip updates probabilistically.
+
+These parameters transform the deterministic CA into a more realistic model of natural systems, where perfect information transmission is impossible and environmental noise shapes evolutionary dynamics.
+
+## Interactive Exploration
+
+The demo above allows you to:
+
+1. Paint initial conditions by clicking and dragging on the main canvas
+2. Adjust simulation parameters to explore different dynamical regimes
+3. Create custom rules by entering 512-bit binary strings
+4. Visualize rule structure through the interactive rule map
+5. Control simulation speed and introduce stochastic elements
+
+### Suggested Explorations
+
+Start with simple patterns and observe their evolution. Try creating symmetric initial conditions and watch how they break symmetry over time. Experiment with different noise levels to see how randomness affects pattern stability. Most importantly, create your own rules and discover the vast space of possible behaviors.
+
+Memory cellular automata demonstrate that complexity doesn't require complicated rules—it emerges from the interaction of simple components over time. They serve as both computational tools and models of natural processes, bridging the gap between abstract mathematics and observable phenomena in physics, biology, and beyond.
+
+---
+
+*This interactive demonstration was built using WebGL for high-performance computation and modern web technologies for accessibility across devices.*
+        `;
+
+            // Configure marked options for better rendering
+            marked.setOptions({
+                breaks: false,
+                gfm: true,
+                headerIds: true,
+                headerPrefix: 'section-'
+            });
+
+            // Render the markdown and inject into the article section
+            document.addEventListener('DOMContentLoaded', function () {
+                const articleContent = document.getElementById('article-content');
+                if (articleContent) {
+                    articleContent.innerHTML = marked.parse(blogMarkdown);
+                }
+            });
+        </script>
+</body>
+</html>
