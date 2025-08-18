@@ -133,7 +133,7 @@ body {
 }
 
 .control-group {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .control-group h3 {
@@ -147,7 +147,7 @@ body {
 }
 
 .control-item {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .control-item label {
@@ -313,8 +313,8 @@ body {
     /*overflow: hidden;*/
     /*box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);*/
     background: white;
-    margin-bottom: 30px;
-    margin-top: 30px;
+    margin-bottom: 15px;
+    margin-top: 15px;
 }
 
 .rule-visualizer canvas {
