@@ -256,27 +256,34 @@
             const blogMarkdown = `
 # Memory Cellular Automata
 
-Cellular automata (CA) are a useful framework for exploring how simple dynamical rules can give rise to complex emergent behavior. We consider CA which act on binary cells living on a 2D grid, which are updated in time according to a specified local update rule, with a given cell updated in a way that depends on the 3x3 neighborhood of surrounding cells.
+Cellular automata (CA) are a useful framework for exploring how simple dynamical rules can give rise to complex emergent behavior. We consider CA which act on binary cells living on a 2D grid. The cells are updated in time according to a specified local update rule, which takes as input the 3x3 neighborhood surrounding each cell.
 
-There exist many CA which produce interesting emergent behavior, perhaps the most famous being Conway's game of life. Almost all known CA are however extremely fragile: in the presence of a small amount of noise, the emergent structures they produce are rapidly destroyed.
+There exist many CA which produce interesting emergent behavior, perhaps the most famous being [Conway's game of life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life). However, almost all known CA (including the game of life) are extremely fragile: in the presence of an arbitrarily small amount of noise, the emergent structures they produce are rapidly destroyed.
 
-The simplest nontrivial computation a CA can perform is to remember a single bit of information. *Memory CA* are CA that remember this information in a robust way, with the information being preserved even in the presence of a small amount of noise. The construction of memory CA can be viewed as a stepping stone on a path towards creating systems capable of robust computation and self-organization.
+The simplest nontrivial computation a CA can perform is to remember a single bit of information. *Memory CA* are CA that remember this information in a robust way, with the information being preserved even in the presence of a small amount of noise. The construction of memory CA can be viewed as a stepping stone on a path towards creating life-like systems capable of robust computation and self-organization.
 
-How are memory CA constructed, and in what types of settings can they exist? We do not yet have universal answers to these questions. For many years, the only explicit memory CA studied was a rule known as *Toom's rule*. To search for other memory CA, we used *neural cellular automata*, a simple machine learning framework which we used to discover many new memory CA, some of which can be experimented with in the demo above.
+How are memory CA constructed, and in what types of settings can they exist? We do not yet have universal answers to these questions. For many years, the only memory CA studied was a rule known as [Toom's rule](https://en.wikipedia.org/wiki/Toom%27s_rule). To search for other memory CA, we used a modification of the [neural cellular automata framework](https://distill.pub/2020/growing-ca/?ref=https://githubhelp.com), a simple machine learning architecture which we used to discover many new memory CA, some of which can be experimented with in the demo above.
 
 ## Using the demo
 
-The visualization above shows the evolution of a grid of binary cells under a given CA rule. Our rules update the system in a way that depends on the 3x3 neighborhod around each cell.
-Since there are $2^9 = 512$ possible configurations of 3x3 blocks of cells, each CA rule can be specified by a binary string of length 512, which collects the CA's outputs on each of the 512 inputs;
- this is the "binary code" in the demo above.
-The binary code can be modified by double-clicking on the green and red squares above; green squares indicate that the CA outputs 1 on the given input, while red squares indicate that it outputs 0.
+The visualization above shows the evolution of a grid of binary cells under a given CA rule. 
+Since there are $2^9 = 512$ possible configurations of 3x3 blocks of cells, each CA rule can be specified by a binary string of length 512 which tabulates the CA's outputs on each of the 512 possible inputs; this string is the "binary code" in the demo above.
+The binary code can be modified by double-clicking on the green and red squares below the demo window (green squares indicate that the CA outputs 1 on the given input; red squares indicate that it outputs 0).
 
 ### Update Rules
 
 In the demo, the dynamics is subject to noise of strength $p$ and bias $\\eta$, and cells update according to an update probability $\\alpha$. The following things happen at each time step:
 
-1. Each site is independently chosen to be updated with probability $\\alpha$.
-2. If a site updates, it updates according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1+\\eta)/2$ and $(1-\\eta)/2$, respectively.
+1. Each site is independently chosen to be updated with probability $\\alpha$ (at $\\alpha = 1$ all sites update synchronously, while at $\\alpha \rightarrow 0$ they update according to independent Poisson processes).
+2. If a site updates, it does so according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1+\\eta)/2$ and $(1-\\eta)/2$, respectively.
+
+### Distributed Error Correction 
+
+The crucial feature of memory CA is that they are able to correct noise-induced errors in a *distributed, autonomous* manner. In the demo, the way that each CA accomplishes this can be investigated by using the brush to create a large island of errors, and watching how the island is eroded by the CA dynamics (provided the noise strength is not too large). Different memory CA erode islands of errors in qualitatively distinct ways. 
+
+### Phase Transitions 
+
+One interesting phenomenon in the physics of memory CA is the existence of sharp *phase transitions*, which occurs at the points where the effects of noise are strong enough to destroy the memory. These phase transitions can be driven by changing the noise strength, the noise bias, or the synchronicity of the updates. In the ``rule D'' CA, there is a regime where the memory can even be destroyed by *decreasing* the noise. We recommend playing around with different modified CA rules and seeing how the locations of the phase transitions are modified.  
 
 ---
 
