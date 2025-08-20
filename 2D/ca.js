@@ -64,7 +64,7 @@ let CA_state;
 let frame_count = 0;
 
 const params = {
-    rule: "Rule502 (D)",
+    rule: "Rule B (NCA rule 290)",
     grid_size: 100,
     run_ca: true,
     steps_per_frame: -1,
