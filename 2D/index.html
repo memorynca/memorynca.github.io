@@ -4,11 +4,15 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-VDCQV2V8VS"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
 
-      gtag('config', 'G-VDCQV2V8VS');
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+
+        gtag('config', 'G-VDCQV2V8VS');
     </script>
     <meta charset="UTF-8">
     <title>Memory NCA</title>
@@ -96,7 +100,7 @@
                             <div class="slider-container">
                                 <input type="range" id="noise-prob" class="slider" min="0" max="1" step="0.001"
                                        value="0.1" style="margin-top:30px;">
-                                <label>Noise Probability: </label> <label class="slider-value"
+                                <label>Noise Probability ($p$): </label> <label class="slider-value"
                                                                           id="noise-prob-value">0.1</label>
                             </div>
                         </div>
@@ -123,7 +127,7 @@
                             <div class="slider-container">
                                 <input type="range" id="noise-bias" class="slider" min="-1" max="1" step="0.001"
                                        value="0.0" style="margin-top:20px;">
-                                <label>Noise Bias: </label> <label class="slider-value"
+                                <label>Noise Bias ($\eta$): </label> <label class="slider-value"
                                                                    id="noise-bias-value">0.0</label>
                             </div>
                         </div>
@@ -165,7 +169,7 @@
                         </div>
 
                         <div class="control-item">
-                            <label>Update Probability</label>
+                            <label>Update Probability ($\alpha$)</label>
                             <div class="slider-container">
                                 <input type="range" id="update-prob" class="slider" min="0.001" max="1" step="0.001"
                                        value="1">
@@ -230,29 +234,49 @@
         </div>
         <script src="swissgl.js"></script>
         <script src="ca.js"></script>
+        <script>
+            window.MathJax = {
+                tex: {
+                    inlineMath: [['$', '$'], ['\\(', '\\)']],
+                    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                    processEscapes: true,
+                    processEnvironments: true
+                },
+                options: {
+                    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+                }
+            };
+        </script>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+
+
         <script>
             const blogMarkdown = `
 # Memory Cellular Automata
 
-Cellular automata (CA) are a useful framework for exploring how simple dynamical rules can give rise to complex emergent behavior. We consider CA which act on binary cells living on a 2D grid, which are updated in time according to a specified local update rule, with a given cell updated in a way that depends on the 3x3 neighborhood of surrounding cells. 
+Cellular automata (CA) are a useful framework for exploring how simple dynamical rules can give rise to complex emergent behavior. We consider CA which act on binary cells living on a 2D grid, which are updated in time according to a specified local update rule, with a given cell updated in a way that depends on the 3x3 neighborhood of surrounding cells.
 
-There exist many CA which produce interesting emergent behavior, perhaps the most famous being Conway's game of life. Almost all known CA are however extremely fragile: in the presence of a small amount of noise, the emergent structures they produce are rapidly destroyed. 
+There exist many CA which produce interesting emergent behavior, perhaps the most famous being Conway's game of life. Almost all known CA are however extremely fragile: in the presence of a small amount of noise, the emergent structures they produce are rapidly destroyed.
 
-The simplest nontrivial computation a CA can perform is to remember a single bit of information. *Memory CA* are CA that remember this information in a robust way, with the information being preserved even in the presence of a small amount of noise. The construction of memory CA can be viewed as a stepping stone on a path towards creating systems capable of robust computation and self-organization. 
+The simplest nontrivial computation a CA can perform is to remember a single bit of information. *Memory CA* are CA that remember this information in a robust way, with the information being preserved even in the presence of a small amount of noise. The construction of memory CA can be viewed as a stepping stone on a path towards creating systems capable of robust computation and self-organization.
 
-How are memory CA constructed, and in what types of settings can they exist? We do not yet have universal answers to these questions. For many years, the only explicit memory CA studied was a rule known as *Toom's rule*. To search for other memory CA, we used *neural cellular automata*, a simple machine learning framework which we used to discover many new memory CA, some of which can be experimented with in the demo above. 
+How are memory CA constructed, and in what types of settings can they exist? We do not yet have universal answers to these questions. For many years, the only explicit memory CA studied was a rule known as *Toom's rule*. To search for other memory CA, we used *neural cellular automata*, a simple machine learning framework which we used to discover many new memory CA, some of which can be experimented with in the demo above.
 
-## Using the demo 
+## Using the demo
 
-The visualization above shows the evolution of a grid of binary cells under a given CA rule. Our rules update the system in a way that depends on the 3x3 neighborhod around each cell. Since there are $2^9 = 512$ possible configurations of 3x3 blocks of cells, each CA rule can be specified by a binary string of length 512, which collects the CA's outputs on each of the 512 inputs; this is the ``binary code'' in the demo above. The binary code can be modified by double-clicking on the green and red squares above; green squares indicate that the CA outputs 1 on the given input, while red squares indicate that it outputs 0. 
+The visualization above shows the evolution of a grid of binary cells under a given CA rule. Our rules update the system in a way that depends on the 3x3 neighborhod around each cell.
+Since there are $2^9 = 512$ possible configurations of 3x3 blocks of cells, each CA rule can be specified by a binary string of length 512, which collects the CA's outputs on each of the 512 inputs;
+ this is the "binary code" in the demo above.
+The binary code can be modified by double-clicking on the green and red squares above; green squares indicate that the CA outputs 1 on the given input, while red squares indicate that it outputs 0.
 
 ### Update Rules
 
-In the demo, the dynamics is subject to noise of strength $p$ and bias $\eta$, and cells update according to an update probability $\alpha$. The following things happen at each time step: 
+In the demo, the dynamics is subject to noise of strength $p$ and bias $\\eta$, and cells update according to an update probability $\\alpha$. The following things happen at each time step:
 
-1. Each site is independently chosen to be updated with probability $\alpha$. 
-2. If a site updates, it updates according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1+\eta)/2$ and $(1-\eta)/2$, respectively. 
+1. Each site is independently chosen to be updated with probability $\\alpha$.
+2. If a site updates, it updates according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1+\\eta)/2$ and $(1-\\eta)/2$, respectively.
 
 ---
 
@@ -267,13 +291,32 @@ In the demo, the dynamics is subject to noise of strength $p$ and bias $\eta$, a
                 headerPrefix: 'section-'
             });
 
-            // Render the markdown and inject into the article section
-            document.addEventListener('DOMContentLoaded', function () {
-                const articleContent = document.getElementById('article-content');
-                if (articleContent) {
-                    articleContent.innerHTML = marked.parse(blogMarkdown);
+            // Function to render markdown with math
+            function renderContent() {
+                const contentDiv = document.getElementById('article-content');
+
+                // First render the markdown
+                contentDiv.innerHTML = marked.parse(blogMarkdown);
+
+                // Then process the math with MathJax
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([contentDiv]).catch(function (err) {
+                        console.log('MathJax error:', err.message);
+                    });
                 }
+            }
+
+            // Wait for everything to load
+            document.addEventListener('DOMContentLoaded', function () {
+                // Small delay to ensure MathJax is ready
+                setTimeout(renderContent, 100);
             });
+
+            // Also try when window loads as backup
+            window.addEventListener('load', function () {
+                setTimeout(renderContent, 200);
+            });
+
         </script>
 </body>
 </html>
