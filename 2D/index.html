@@ -233,54 +233,26 @@
         <script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
         <script>
             const blogMarkdown = `
-# Understanding Memory Cellular Automata
+# Memory Cellular Automata
 
-Cellular automata (CA) represent one of the most fascinating examples of how simple rules can give rise to complex emergent behavior. Unlike traditional cellular automata that consider only the immediate neighborhood of a cell, *memory cellular automata* incorporate information from extended neighborhoods, creating richer dynamics and more sophisticated computational capabilities.
+Cellular automata (CA) are a useful framework for exploring how simple dynamical rules can give rise to complex emergent behavior. We consider CA which act on binary cells living on a 2D grid, which are updated in time according to a specified local update rule, with a given cell updated in a way that depends on the 3x3 neighborhood of surrounding cells. 
 
-## The Mathematics Behind Memory CA
+There exist many CA which produce interesting emergent behavior, perhaps the most famous being Conway's game of life. Almost all known CA are however extremely fragile: in the presence of a small amount of noise, the emergent structures they produce are rapidly destroyed. 
 
-In a standard cellular automaton, the state of a cell at time *t+1* depends only on its neighborhood configuration at time *t*. Memory CA extend this by considering a larger context window, effectively giving cells a form of "memory" about their extended environment.
+The simplest nontrivial computation a CA can perform is to remember a single bit of information. *Memory CA* are CA that remember this information in a robust way, with the information being preserved even in the presence of a small amount of noise. The construction of memory CA can be viewed as a stepping stone on a path towards creating systems capable of robust computation and self-organization. 
 
-For a 2D grid, if we consider a 3×3 neighborhood around each cell, we have 2^9 = 512 possible configurations. Each configuration maps to a binary output (0 or 1), resulting in a 512-bit rule string that completely defines the automaton's behavior.
+How are memory CA constructed, and in what types of settings can they exist? We do not yet have universal answers to these questions. For many years, the only explicit memory CA studied was a rule known as *Toom's rule*. To search for other memory CA, we used *neural cellular automata*, a simple machine learning framework which we used to discover many new memory CA, some of which can be experimented with in the demo above. 
 
-### Rule Visualization
+## Using the demo 
 
-The interactive visualization above shows both the current state of the cellular automaton and the underlying rule structure. The rule visualizer displays all 512 possible neighborhood configurations, with green indicating "alive" (1) outputs and red indicating "dead" (0) outputs for each configuration.
+The visualization above shows the evolution of a grid of binary cells under a given CA rule. Our rules update the system in a way that depends on the 3x3 neighborhod around each cell. Since there are $2^9 = 512$ possible configurations of 3x3 blocks of cells, each CA rule can be specified by a binary string of length 512, which collects the CA's outputs on each of the 512 inputs; this is the ``binary code'' in the demo above. The binary code can be modified by double-clicking on the green and red squares above; green squares indicate that the CA outputs 1 on the given input, while red squares indicate that it outputs 0. 
 
-> Try double-clicking on individual cells in the rule visualizer to manually edit the rule and observe how small changes can dramatically alter the emergent patterns.
+### Update Rules
 
-## Emergent Computation
+In the demo, the dynamics is subject to noise of strength $p$ and bias $\eta$, and cells update according to an update probability $\alpha$. The following things happen at each time step: 
 
-What makes memory CA particularly interesting is their capacity for computation. The extended neighborhood allows for more sophisticated information processing, enabling phenomena such as:
-
-- **Pattern propagation** - Complex structures can move across the grid while maintaining their form
-- **Information storage** - Local configurations can encode and preserve information over time
-- **Collision dynamics** - Interacting patterns can perform logical operations
-- **Self-organization** - Random initial conditions often evolve into organized, repeating structures
-
-## Noise and Stochastic Dynamics
-
-Real-world systems are rarely deterministic. This simulation incorporates several forms of stochasticity:
-
-**Noise Probability** controls how often random fluctuations occur, while **Noise Bias** determines whether these fluctuations favor alive or dead states. **Update Probability** introduces temporal irregularity, causing some cells to skip updates probabilistically.
-
-These parameters transform the deterministic CA into a more realistic model of natural systems, where perfect information transmission is impossible and environmental noise shapes evolutionary dynamics.
-
-## Interactive Exploration
-
-The demo above allows you to:
-
-1. Paint initial conditions by clicking and dragging on the main canvas
-2. Adjust simulation parameters to explore different dynamical regimes
-3. Create custom rules by entering 512-bit binary strings
-4. Visualize rule structure through the interactive rule map
-5. Control simulation speed and introduce stochastic elements
-
-### Suggested Explorations
-
-Start with simple patterns and observe their evolution. Try creating symmetric initial conditions and watch how they break symmetry over time. Experiment with different noise levels to see how randomness affects pattern stability. Most importantly, create your own rules and discover the vast space of possible behaviors.
-
-Memory cellular automata demonstrate that complexity doesn't require complicated rules—it emerges from the interaction of simple components over time. They serve as both computational tools and models of natural processes, bridging the gap between abstract mathematics and observable phenomena in physics, biology, and beyond.
+1. Each site is independently chosen to be updated with probability $\alpha$. 
+2. If a site updates, it updates according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1+\eta)/2$ and $(1-\eta)/2$, respectively. 
 
 ---
 
