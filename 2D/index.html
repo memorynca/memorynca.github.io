@@ -274,8 +274,8 @@ The binary code can be modified by double-clicking on the green and red squares 
 
 In the demo, the dynamics is subject to noise of strength $p$ and bias $\\eta$, and cells update according to an update probability $\\alpha$. The following things happen at each time step:
 
-1. Each site is independently chosen to be updated with probability $\\alpha$ (at $\\alpha = 1$ all sites update synchronously, while at $\\alpha \rightarrow 0$ they update according to independent Poisson processes).
-2. If a site updates, it does so according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1+\\eta)/2$ and $(1-\\eta)/2$, respectively.
+1. Each site is independently chosen to be updated with probability $\\alpha$ (at $\\alpha = 1$ all sites update synchronously, while at $\\alpha \\rightarrow 0$ they update according to independent Poisson processes).
+2. If a site updates, it does so according to the given CA rule with probability $1-p$, and suffers noise with probability $p$. If noise occurs, the state of the cell becomes $0$ or $1$ with probability $(1-\\eta)/2$ and $(1+\\eta)/2$, respectively.
 
 ### Distributed Error Correction 
 
@@ -287,7 +287,7 @@ One interesting phenomenon in the physics of memory CA is the existence of sharp
 
 ---
 
-*This interactive demonstration was built using SwissGL for high-performance computation and modern web technologies for accessibility across devices.*
+*This interactive demonstration is built using SwissGL.*
         `;
 
             // Configure marked options for better rendering
