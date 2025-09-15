@@ -98,10 +98,12 @@
 
                         <div>
                             <div class="slider-container">
+
                                 <input type="range" id="noise-prob" class="slider" min="0" max="1" step="0.001"
                                        value="0.1" style="margin-top:30px;">
-                                <label>Noise Probability ($p$): </label> <label class="slider-value"
-                                                                          id="noise-prob-value">0.1</label>
+                                <input class="slider-value" id="noise-prob-input" type="number" min="0" max="1" style="width: 75px; text-align: center;" value="0.1">
+                                <label>Noise Probability ($p$): </label>
+                                <label class="slider-value" id="noise-prob-value">0.1</label>
                             </div>
                         </div>
 
@@ -127,6 +129,7 @@
                             <div class="slider-container">
                                 <input type="range" id="noise-bias" class="slider" min="-1" max="1" step="0.001"
                                        value="0.0" style="margin-top:20px;">
+                                <input class="slider-value" id="noise-bias-input" type="number" min="-1.0" max="1.0" style="width: 75px; text-align: center;" value="0.0">
                                 <label>Noise Bias ($\eta$): </label> <label class="slider-value"
                                                                    id="noise-bias-value">0.0</label>
                             </div>
@@ -168,7 +171,9 @@
 
                         <div class="control-item">
                             <label>Rule Selection Probability</label>
+
                             <div class="slider-container">
+                                <input class="slider-value" id="rule-prob-input" type="number" min="0.0" max="1.0" style="width: 75px; text-align: center;" value="0.5">
                                 <input type="range" id="rule-prob" class="slider" min="0.0" max="1" step="0.01"
                                        value="0.5">
                                 <div class="slider-value" id="rule-prob-value">0.5</div>

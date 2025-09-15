@@ -138,6 +138,12 @@ function setupUIControls() {
         {id: 'spf', param: 'steps_per_frame', uniform: false}
     ];
 
+    const text_inputs = [
+        {id: 'noise-prob-input', param: 'noise_prob', uniform: true},
+        {id: 'noise-bias-input', param: 'noise_bias', uniform: true},
+        {id: 'rule-prob-input', param: 'rule_prob', uniform: true},
+    ]
+
     sliders.forEach(({id, param, uniform}) => {
         const slider = document.getElementById(id);
         const valueDisplay = document.getElementById(id + '-value');
@@ -155,6 +161,26 @@ function setupUIControls() {
             } else {
                 valueDisplay.textContent = value;
             }
+        });
+    });
+
+    text_inputs.forEach(({id, param, uniform}) => {
+        const input = document.getElementById(id);
+        input.addEventListener('change', (e) => {
+            let value = parseFloat(e.target.value);
+            if (isNaN(value)) {
+                value = 0.0;
+            }
+            e.target.value = value;
+            if (uniform) {
+                uniforms[param] = value;
+            } else {
+                params[param] = value;
+            }
+            const slider = document.getElementById(id.replace('-input', ''));
+            slider.value = value;
+            const valueDisplay = document.getElementById(id.replace('-input', '') + '-value');
+            valueDisplay.textContent = value;
         });
     });
 
