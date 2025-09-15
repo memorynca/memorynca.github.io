@@ -369,8 +369,9 @@ canvas.addEventListener('touchend', (e) => {
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
-    uniforms.mouse_x = touch.clientX / canvas.width;
-    uniforms.mouse_y = 1.0 - touch.clientY / canvas.height;
+    const rect = canvas.getBoundingClientRect();
+    uniforms.mouse_x = (touch.clientX - rect.left) / canvas.width;
+    uniforms.mouse_y = 1.0 - (touch.clientY - rect.top) / canvas.height;
     if (uniforms.mouse_down) {
         brush();
     }
