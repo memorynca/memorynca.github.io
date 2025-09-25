@@ -65,19 +65,19 @@ let CA_state;
 let frame_count = 0;
 
 const params = {
-    rule1: "Rule A (pentagonal majority vote)",
-    rule2: "Rule D (NCA rule 502)",
-    grid_size: 100,
+    rule1: "R2 OR",
+    rule2: "R2 AND",
+    grid_size: 200,
     run_ca: true,
-    steps_per_frame: -1,
+    steps_per_frame: 2,
 };
 
 const uniforms = {
     init_bit: 0,
     brush_bit: 1,
-    noise_prob: 0.1,
+    noise_prob: 0.025,
     noise_bias: 0.0,
-    update_prob: 1.0,
+    update_prob: 0.25,
     rule_prob: 0.5,
     brush_size: 0.15,
     mouse_x: 0.0,
