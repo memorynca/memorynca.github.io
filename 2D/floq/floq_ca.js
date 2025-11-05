@@ -65,19 +65,19 @@ let CA_state;
 let frame_count = 0;
 
 const params = {
-    rule1: "Rule A (pentagonal majority vote)",
-    rule2: "Rule D (NCA rule 502)",
-    grid_size: 100,
+    rule1: "R2 OR",
+    rule2: "R2 AND",
+    grid_size: 200,
     run_ca: true,
-    steps_per_frame: -1,
+    steps_per_frame: 2,
 };
 
 const uniforms = {
     init_bit: 0,
     brush_bit: 1,
-    noise_prob: 0.1,
+    noise_prob: 0.025,
     noise_bias: 0.0,
-    update_prob: 1.0,
+    update_prob: 0.25,
     rule_prob: 0.5,
     brush_size: 0.15,
     mouse_x: 0.0,
@@ -138,6 +138,12 @@ function setupUIControls() {
         {id: 'spf', param: 'steps_per_frame', uniform: false}
     ];
 
+    const text_inputs = [
+        {id: 'noise-prob-input', param: 'noise_prob', uniform: true},
+        {id: 'noise-bias-input', param: 'noise_bias', uniform: true},
+        {id: 'rule-prob-input', param: 'rule_prob', uniform: true},
+    ]
+
     sliders.forEach(({id, param, uniform}) => {
         const slider = document.getElementById(id);
         const valueDisplay = document.getElementById(id + '-value');
@@ -155,6 +161,26 @@ function setupUIControls() {
             } else {
                 valueDisplay.textContent = value;
             }
+        });
+    });
+
+    text_inputs.forEach(({id, param, uniform}) => {
+        const input = document.getElementById(id);
+        input.addEventListener('change', (e) => {
+            let value = parseFloat(e.target.value);
+            if (isNaN(value)) {
+                value = 0.0;
+            }
+            e.target.value = value;
+            if (uniform) {
+                uniforms[param] = value;
+            } else {
+                params[param] = value;
+            }
+            const slider = document.getElementById(id.replace('-input', ''));
+            slider.value = value;
+            const valueDisplay = document.getElementById(id.replace('-input', '') + '-value');
+            valueDisplay.textContent = value;
         });
     });
 
@@ -343,8 +369,9 @@ canvas.addEventListener('touchend', (e) => {
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
-    uniforms.mouse_x = touch.clientX / canvas.width;
-    uniforms.mouse_y = 1.0 - touch.clientY / canvas.height;
+    const rect = canvas.getBoundingClientRect();
+    uniforms.mouse_x = (touch.clientX - rect.left) / canvas.width;
+    uniforms.mouse_y = 1.0 - (touch.clientY - rect.top) / canvas.height;
     if (uniforms.mouse_down) {
         brush();
     }
