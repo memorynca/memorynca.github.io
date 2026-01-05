@@ -9,7 +9,7 @@ const tileSize = 16;
 const padding = 3;
 
 const baseImage = new Image();
-baseImage.src = '512n_tiny.png';
+baseImage.src = '../512n_tiny.png';
 baseImage.onload = () => {
     imageCtx.drawImage(baseImage, 0, 0);
 };
@@ -43,13 +43,13 @@ overlayCanvas.addEventListener('dblclick', (e) => {
 
     if (col >= 0 && col < cols && row >= 0 && row < rows) {
         const index = row * cols + col;
-        let code = CA.code;
+        let code = CA1.code;
         if (code[index] === '1') {
             code = code.substring(0, index) + '0' + code.substring(index + 1);
         } else {
             code = code.substring(0, index) + '1' + code.substring(index + 1);
         }
-        load_CA(code);
+        CA1 = load_CA(code, true, "rule1");
     }
 });
 
@@ -59,23 +59,26 @@ const glsl = SwissGL(canvas);
 
 let lastDrawTime = 0;
 let CAs;
-let CA = null;
+let CA1 = null;
+let CA2 = null;
 let CA_state;
 let frame_count = 0;
 
 const params = {
-    rule: "Rule B (NCA rule 290)",
-    grid_size: 100,
+    rule1: "R2 OR",
+    rule2: "R2 AND",
+    grid_size: 200,
     run_ca: true,
-    steps_per_frame: -1,
+    steps_per_frame: 2,
 };
 
 const uniforms = {
     init_bit: 0,
     brush_bit: 1,
-    noise_prob: 0.1,
+    noise_prob: 0.025,
     noise_bias: 0.0,
-    update_prob: 1.0,
+    update_prob: 0.25,
+    rule_prob: 0.5,
     brush_size: 0.15,
     mouse_x: 0.0,
     mouse_y: 0.0,
@@ -131,8 +134,15 @@ function setupUIControls() {
         {id: 'noise-prob', param: 'noise_prob', uniform: true},
         {id: 'noise-bias', param: 'noise_bias', uniform: true},
         {id: 'update-prob', param: 'update_prob', uniform: true},
+        {id: 'rule-prob', param: 'rule_prob', uniform: true},
         {id: 'spf', param: 'steps_per_frame', uniform: false}
     ];
+
+    const text_inputs = [
+        {id: 'noise-prob-input', param: 'noise_prob', uniform: true},
+        {id: 'noise-bias-input', param: 'noise_bias', uniform: true},
+        {id: 'rule-prob-input', param: 'rule_prob', uniform: true},
+    ]
 
     sliders.forEach(({id, param, uniform}) => {
         const slider = document.getElementById(id);
@@ -154,11 +164,37 @@ function setupUIControls() {
         });
     });
 
+    text_inputs.forEach(({id, param, uniform}) => {
+        const input = document.getElementById(id);
+        input.addEventListener('change', (e) => {
+            let value = parseFloat(e.target.value);
+            if (isNaN(value)) {
+                value = 0.0;
+            }
+            e.target.value = value;
+            if (uniform) {
+                uniforms[param] = value;
+            } else {
+                params[param] = value;
+            }
+            const slider = document.getElementById(id.replace('-input', ''));
+            slider.value = value;
+            const valueDisplay = document.getElementById(id.replace('-input', '') + '-value');
+            valueDisplay.textContent = value;
+        });
+    });
+
     // Rule selection
-    const ruleSelect = document.getElementById('rule-select');
-    ruleSelect.addEventListener('change', (e) => {
-        params.rule = e.target.value;
-        CA = load_CA(CAs[e.target.value].code);
+    const rule1Select = document.getElementById('rule1-select');
+    rule1Select.addEventListener('change', (e) => {
+        params.rule1 = e.target.value;
+        CA1 = load_CA(CAs[e.target.value].code, true, "rule1");
+    });
+
+    const rule2Select = document.getElementById('rule2-select');
+    rule2Select.addEventListener('change', (e) => {
+        params.rule2 = e.target.value;
+        CA2 = load_CA(CAs[e.target.value].code, false, "rule2");
     });
 }
 
@@ -167,19 +203,32 @@ async function init() {
     CAs = await response.json();
 
     // Populate rule select
-    const ruleSelect = document.getElementById('rule-select');
-    ruleSelect.innerHTML = '';
+    const rule1Select = document.getElementById('rule1-select');
+    rule1Select.innerHTML = '';
     Object.keys(CAs).forEach(ruleName => {
         const option = document.createElement('option');
         option.value = ruleName;
         option.textContent = CAs[ruleName].name || ruleName;
-        ruleSelect.appendChild(option);
-        if (ruleName === params.rule) {
-            ruleSelect.value = ruleName;
+        rule1Select.appendChild(option);
+        if (ruleName === params.rule1) {
+            rule1Select.value = ruleName;
         }
     });
 
-    CA = load_CA(CAs[params.rule].code);
+    const rule2Select = document.getElementById('rule2-select');
+    rule2Select.innerHTML = '';
+    Object.keys(CAs).forEach(ruleName => {
+        const option = document.createElement('option');
+        option.value = ruleName;
+        option.textContent = CAs[ruleName].name || ruleName;
+        rule2Select.appendChild(option);
+        if (ruleName === params.rule2) {
+            rule2Select.value = ruleName;
+        }
+    });
+
+    CA1 = load_CA(CAs[params.rule1].code, true, "rule1");
+    CA2 = load_CA(CAs[params.rule2].code, false, "rule2");
     reset_state();
     setupUIControls();
     render();
@@ -193,15 +242,15 @@ document.getElementById('add_rule').addEventListener('click', () => {
         CAs[rule_name] = {name: rule_name, code: rule_code};
 
         // Update rule select
-        const ruleSelect = document.getElementById('rule-select');
+        const ruleSelect = document.getElementById('rule1-select');
         const option = document.createElement('option');
         option.value = rule_name;
         option.textContent = rule_name;
         ruleSelect.appendChild(option);
         ruleSelect.value = rule_name;
 
-        params.rule = rule_name;
-        CA = load_CA(CAs[rule_name].code);
+        params.rule1 = rule_name;
+        CA1 = load_CA(CAs[rule_name].code, true, "rule1");
 
         // Clear input fields
         document.getElementById('rule_name').value = '';
@@ -211,22 +260,24 @@ document.getElementById('add_rule').addEventListener('click', () => {
     }
 });
 
-function load_CA(code) {
+function load_CA(code, draw = false, tag="rule") {
     binary_code = Float32Array.from(code, (c) => c === '1' ? 1.0 : 0.0)
-    CA = {
+    let ca = {
         code: code,
         binary_code: binary_code,
         rule_bits: glsl({}, {
             size: [1, 512],
             format: "r32f",
             story: 1,
-            tag: "rule",
+            tag: tag,
             data: binary_code
         }),
     }
-    drawOverlay(code);
-    document.getElementById('current_rule').textContent = code;
-    return CA;
+    if (draw) {
+        drawOverlay(code);
+        document.getElementById('current_rule').textContent = code;
+    }
+    return ca;
 }
 
 function brush() {
@@ -252,7 +303,8 @@ function brush() {
 }
 
 function reset_CA() {
-    CA = load_CA(CAs[params.rule].code);
+    CA1 = load_CA(CAs[params.rule1].code, true, "rule1");
+    CA2 = load_CA(CAs[params.rule2].code, false, "rule2");
 }
 
 function reset_state() {
@@ -317,9 +369,6 @@ canvas.addEventListener('touchend', (e) => {
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
-    // uniforms.mouse_x = touch.clientX / canvas.width;
-    // uniforms.mouse_y = 1.0 - touch.clientY / canvas.height;
-    // This is wrong. clientX is not relative to the canvas
     const rect = canvas.getBoundingClientRect();
     uniforms.mouse_x = (touch.clientX - rect.left) / canvas.width;
     uniforms.mouse_y = 1.0 - (touch.clientY - rect.top) / canvas.height;
@@ -333,13 +382,15 @@ function step(t) {
 
     glsl({
         ...uniforms,
-        rule: CA.rule_bits[0],
+        rule1: CA1.rule_bits[0],
+        rule2: CA2.rule_bits[0],
         seed: t + Math.random() * 6523,
         FP: `
                     float s = Src(I).x;
                     float p = 1.0;
                     float res = 0.0;
                     bool update_flag = hash(ivec3(I, seed)).x < update_prob;
+                    bool rule_flag = hash(ivec3(I, seed + 5311.0)).x < rule_prob;
 
                     if (!update_flag) {
                         FOut = vec4(s);
@@ -362,7 +413,7 @@ function step(t) {
                                 p *= 2.0;
                             }
                         }
-                        float s_next = rule(ivec2(0, int(res))).x;
+                        float s_next = rule_flag ? rule1(ivec2(0, int(res))).x : rule2(ivec2(0, int(res))).x;
                         FOut = vec4(s_next);
                     }
                 `
@@ -370,7 +421,7 @@ function step(t) {
 }
 
 function render(t) {
-    if (!CA) return;
+    if (!CA1 || !CA2) return;
 
     frame_count++;
     let spf = params.steps_per_frame;
