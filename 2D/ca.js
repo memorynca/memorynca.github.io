@@ -126,6 +126,8 @@ function setupUIControls() {
     });
 
 
+
+
     // Sliders
     const sliders = [
         {id: 'noise-prob', param: 'noise_prob', uniform: true},
@@ -317,12 +319,8 @@ canvas.addEventListener('touchend', (e) => {
 canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const touch = e.touches[0];
-    // uniforms.mouse_x = touch.clientX / canvas.width;
-    // uniforms.mouse_y = 1.0 - touch.clientY / canvas.height;
-    // This is wrong. clientX is not relative to the canvas
-    const rect = canvas.getBoundingClientRect();
-    uniforms.mouse_x = (touch.clientX - rect.left) / canvas.width;
-    uniforms.mouse_y = 1.0 - (touch.clientY - rect.top) / canvas.height;
+    uniforms.mouse_x = touch.clientX / canvas.width;
+    uniforms.mouse_y = 1.0 - touch.clientY / canvas.height;
     if (uniforms.mouse_down) {
         brush();
     }
